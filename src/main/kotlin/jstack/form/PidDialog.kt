@@ -10,7 +10,7 @@ import javax.swing.JComponent
  */
 open class PidDialog : DialogWrapper {
 
-    private var processes: JComboBox<Pid>? = null
+    val processes: JComboBox<Pid>
 
     var pid: Pid? = null
         get
@@ -19,8 +19,8 @@ open class PidDialog : DialogWrapper {
     constructor(pids: Array<Pid>) : super(true) {
 
         processes = JComboBox(pids)
-        processes?.isEditable = false
-        processes?.addActionListener({ e ->
+        processes.isEditable = false
+        processes.addActionListener({ e ->
             val src = e?.source as? JComboBox<*>
             pid = src?.selectedItem as? Pid
         })
