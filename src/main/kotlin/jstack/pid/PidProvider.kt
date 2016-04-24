@@ -32,7 +32,7 @@ object PidProvider {
         return Pid(descr.id()?.toLong() ?: -1, descr.displayName() ?: "");
     }
 
-    private fun getProcessName(descr: VirtualMachineDescriptor) : String {
+    private fun getProcessName(descr: VirtualMachineDescriptor): String {
 
         var name = descr.displayName();
 
