@@ -1,48 +1,35 @@
 package jstack.pid
 
-import com.intellij.openapi.ui.Messages
 import com.sun.tools.attach.VirtualMachine
 import com.sun.tools.attach.VirtualMachineDescriptor
+import jstack.form.PidForm
 
 /**
  * Created by vChiper on 4/24/2016.
  */
-
-data class Pid(val id: Long, val name: String)
-
 object PidProvider {
 
-    fun getProcessPid(): Pid {
-        var descrs = VirtualMachine.list()
-
-        var names = descrs
-                .map { it -> getProcessName(it) }
+    fun getProcessPid(listener: (Pid) -> Unit) {
+        val pids = VirtualMachine.list()
+                .map { it -> getPid(it) }
                 .toTypedArray()
 
-        var selected = Messages.showEditableChooseDialog(
-                "Select process",
-                "Select process",
-                null,
-                names,
-                names.first(),
-                null)
-
-        var descr = descrs.first { it -> it.displayName().contains(selected ?: "", true) };
-
-        return Pid(descr.id()?.toLong() ?: -1, descr.displayName() ?: "");
+        val form = PidForm(pids)
+        form.addPidListener(listener)
     }
 
-    private fun getProcessName(descr: VirtualMachineDescriptor) : String {
+    private fun getPid(descriptor: VirtualMachineDescriptor) : Pid {
 
-        var name = descr.displayName();
+        val name = descriptor.displayName();
 
         if (name.isEmpty())
-            return name
+            return Pid(descriptor.id().toLong())
 
-        var parts = name.split(' ');
+        val parts = name.split(' ');
+
         if (parts.count() == 0)
-            return name
+            return Pid(descriptor.id().toLong())
 
-        return parts[0];
+        return Pid(descriptor.id().toLong(), parts[0]);
     }
 }
