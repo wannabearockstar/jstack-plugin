@@ -2,20 +2,21 @@ package jstack.pid
 
 import com.sun.tools.attach.VirtualMachine
 import com.sun.tools.attach.VirtualMachineDescriptor
-import jstack.form.PidForm
+import jstack.form.PidDialog
 
 /**
  * Created by vChiper on 4/24/2016.
  */
 object PidProvider {
 
-    fun getProcessPid(listener: (Pid) -> Unit) {
-        val pids = VirtualMachine.list()
+    fun getPid() : Pid? {
+        val dialog = PidDialog(
+            VirtualMachine.list()
                 .map { it -> getPid(it) }
                 .toTypedArray()
+        )
 
-        val form = PidForm(pids)
-        form.addPidListener(listener)
+        return if (dialog.showAndGet()) dialog.pid else null
     }
 
     private fun getPid(descriptor: VirtualMachineDescriptor) : Pid {

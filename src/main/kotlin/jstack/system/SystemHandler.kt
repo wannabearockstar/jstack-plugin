@@ -1,5 +1,8 @@
 package jstack.system
 
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.Project
 import com.sun.tools.attach.VirtualMachine
 
 import java.io.File
@@ -13,6 +16,15 @@ import javax.management.remote.JMXServiceURL
  */
 object SystemHandler {
     val CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress"
+
+    fun getThreadDumpTask(project: Project, pid: Long): Task.WithResult<Map<Long, ThreadInfo>?, Exception> {
+        return object: Task.WithResult<Map<Long, ThreadInfo>?, Exception>(project, "JStack", false) {
+            override fun compute(indicator: ProgressIndicator): Map<Long, ThreadInfo>? {
+                indicator.text = "Loading thread dump..."
+                return SystemHandler.getThreadDump(pid);
+            }
+        }
+    }
 
     fun getThreadDump(pid: Long): Map<Long, ThreadInfo>? {
         val threadMaxBean = getThreadMXBean(pid) ?: return null
