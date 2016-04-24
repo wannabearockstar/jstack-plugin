@@ -11,13 +11,14 @@ import jstack.system.SystemHandler
  * Created by wannabe on 24.04.16.
  */
 class JStackAction : AnAction() {
+    private val progressManager = ProgressManager.getInstance()
+
     override fun actionPerformed(e: AnActionEvent?) {
 
         val project = e?.project ?: return
         val pid = PidProvider.getPid() ?: return
 
-        val threads = ProgressManager.getInstance()
-                .run(SystemHandler.createThreadDumpTask(project, pid.id))
+        val threads = progressManager.run(SystemHandler.createThreadDumpTask(project, pid.id))
 
         val table = ThreadTableDialog(threads)
         table.pack()
