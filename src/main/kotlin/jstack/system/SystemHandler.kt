@@ -11,20 +11,21 @@ import java.lang.management.ThreadInfo
 import java.lang.management.ThreadMXBean
 import javax.management.remote.JMXConnectorFactory
 import javax.management.remote.JMXServiceURL
+
 /**
  * Created by wannabe on 24.04.16.
  */
+class ThreadDumpTask(project: Project, val pid: Long) : Task.WithResult<Map<Long, ThreadInfo>?, Exception>(project, "JStack", false) {
+    override fun compute(indicator: ProgressIndicator): Map<Long, ThreadInfo>? {
+        indicator.text = "Loading thread dump..."
+        return SystemHandler.getThreadDump(pid);
+    }
+}
+
 object SystemHandler {
     val CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress"
 
-    fun getThreadDumpTask(project: Project, pid: Long): Task.WithResult<Map<Long, ThreadInfo>?, Exception> {
-        return object: Task.WithResult<Map<Long, ThreadInfo>?, Exception>(project, "JStack", false) {
-            override fun compute(indicator: ProgressIndicator): Map<Long, ThreadInfo>? {
-                indicator.text = "Loading thread dump..."
-                return SystemHandler.getThreadDump(pid);
-            }
-        }
-    }
+    fun createThreadDumpTask(project: Project, pid: Long) = ThreadDumpTask(project, pid)
 
     fun getThreadDump(pid: Long): Map<Long, ThreadInfo>? {
         val threadMaxBean = getThreadMXBean(pid) ?: return null

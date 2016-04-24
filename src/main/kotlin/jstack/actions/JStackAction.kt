@@ -17,7 +17,7 @@ class JStackAction : AnAction() {
         val pid = PidProvider.getPid() ?: return
 
         val threads = ProgressManager.getInstance()
-                .run(SystemHandler.getThreadDumpTask(project, pid.id))
+                .run(SystemHandler.createThreadDumpTask(project, pid.id))
 
         val table = ThreadTableDialog(threads)
         table.pack()
