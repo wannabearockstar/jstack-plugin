@@ -18,10 +18,15 @@ class JStackAction : AnAction() {
         val project = e?.project ?: return
         val pid = PidProvider.getPid() ?: return
 
-        val threads = progressManager.run(SystemHandler.createThreadDumpTask(project, pid.id))
+        try {
+            val threads = progressManager.run(SystemHandler.createThreadDumpTask(project, pid.id))
+            val table = ThreadTableDialog(threads)
+            table.pack()
+            table.isVisible = true
+        } catch (e: Exception) {
+            //TODO somehow show fancy error message
+            return
+        }
 
-        val table = ThreadTableDialog(threads)
-        table.pack()
-        table.isVisible = true
     }
 }
